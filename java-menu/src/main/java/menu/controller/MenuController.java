@@ -17,11 +17,15 @@ public class MenuController {
     private final MenuService menuService = new MenuService(foodRepository, coachRepository);
 
     public void run() {
-        outputView.printStartMessage();
-        List<String> names = getCoachNames();
-        menuService.registerCoaches(names);
-        setIgnoreFoods(names);
-        runMenuRecommend();
+        try {
+            outputView.printStartMessage();
+            List<String> names = getCoachNames();
+            menuService.registerCoaches(names);
+            setIgnoreFoods(names);
+            runMenuRecommend();
+        } catch (IllegalArgumentException e) {
+            outputView.printErrorMessage(e);
+        }
     }
 
     private void runMenuRecommend() {

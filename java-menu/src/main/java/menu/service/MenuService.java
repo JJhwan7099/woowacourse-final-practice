@@ -24,12 +24,8 @@ public class MenuService {
     }
 
     private void setFoodsPerCategory(String categoryStr, Category category) {
-        try {
-            List<String> foods = MDFileReader.readFile(categoryStr.toLowerCase()+"-menu.md");
-            for(String foodName: foods) foodRepository.add(new Food(foodName, category));
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException("[ERROR] 파일 경로가 유효하지 않습니다.");
-        }
+        List<String> foods = MDFileReader.readFile(categoryStr.toLowerCase()+"-menu.md");
+        for(String foodName: foods) foodRepository.add(new Food(foodName, category));
     }
 
     public void registerCoaches(List<String> coachNames) {

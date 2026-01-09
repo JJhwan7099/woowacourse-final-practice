@@ -12,7 +12,7 @@ public record MenuRecommendsInfosDTO (
     public static MenuRecommendsInfosDTO from(CategoryOfDay categoryOfDay, List<Coach> coaches) {
         Map<Day, Category> dayCategory = categoryOfDay.getDayCategory();
         List<String> categorySequence = new ArrayList<>();
-        Map<String, List<String>> menuRecommendsPerCoach = new HashMap<>();
+        Map<String, List<String>> menuRecommendsPerCoach = new LinkedHashMap<>();
         for(Day day : Day.values()) categorySequence.add(dayCategory.get(day).getType());
         for(Coach coach : coaches) {
             Map<Day, Food> eatenFoods = coach.getEatenFoods();

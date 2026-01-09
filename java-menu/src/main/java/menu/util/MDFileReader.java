@@ -2,32 +2,31 @@ package menu.util;
 
 import java.io.*;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MDFileReader {
-    public static List<String> readFile(String fileName) throws URISyntaxException {
+    public static List<String> readFile(String fileName) {
         List<String> lines = new ArrayList<>();
-        try {
-            //파일 객체 생성
-            File file = new File(String.valueOf(Paths.get(MDFileReader.class.getClassLoader().getResource(fileName).toURI())));
-            //입력 스트림 생성
-            FileReader filereader = new FileReader(file);
-            //입력 버퍼 생성
-            BufferedReader bufReader = new BufferedReader(filereader);
-            String line = "";
-            while ((line = bufReader.readLine()) != null) {
-                lines.add(line.trim());
+
+        // getResourceAsStream을 사용하면 JAR 내부나 채점 서버 환경에서도 파일을 안전하게 읽어옵니다.
+        try (InputStream inputStream = MDFileReader.class.getClassLoader().getResourceAsStream(fileName);
+             BufferedReader reader = new BufferedReader(new InputStreamReader(
+                     Objects.requireNonNull(inputStream, "[ERROR] 파일을 찾을 수 없습니다: " + fileName),
+                     StandardCharsets.UTF_8))) {
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (!line.isBlank()) {
+                    lines.add(line.trim());
+                }
             }
-            //.readLine()은 끝에 개행문자를 읽지 않는다.
-            bufReader.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("파일이 없음");
-        } catch (IOException e) {
-            System.out.println(e);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            // 예외 발생 시 로그를 남기거나 예외를 던져 프로그램이 오작동하는 것을 방지합니다.
+            throw new IllegalArgumentException("[ERROR] 파일 읽기 중 오류가 발생했습니다: " + fileName);
         }
         return lines;
     }
